@@ -1,5 +1,5 @@
 # Lista de Tarefas
 
-Projeto proposto pelo professor da cadeira de Programação Web (UNICAP 2022.1) como desafio da disciplina.
+Desafio proposto na cadeira de ** *Programação Web* ** (UNICAP 2022.1) como componente da nota final da disciplina.
 
-Exportado de 'programacao-web-unicap' para um repositório próprio.
+Exportado de '*programacao-web-unicap*' para um repositório próprio devido ao tamanho do projeto.
