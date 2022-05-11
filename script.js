@@ -4,23 +4,23 @@ Parse.initialize(
     "4UI5ALJgulft95GQQhI1zQ57zzbdk4P5KzvPXVAB"
 );
 
-const inputTask = document.getElementById("task");
-const btInsert = document.getElementById("insert");
+const inNewTask = document.getElementById("new-task");
+const btAddTask = document.getElementById("add-task");
 
-inputTask.onfocus = () => {
-    btInsert.innerHTML = "arrow_circle_right";
+inNewTask.onfocus = () => {
+    btAddTask.innerHTML = "arrow_circle_right";
 }
 
-inputTask.onblur = () => {
-    btInsert.innerHTML = "add_circle";
+inNewTask.onblur = () => {
+    btAddTask.innerHTML = "add_circle";
 }
 
 let taskList = [];
 let doneTasks = [];
 
 const addTask = () => {
-    if (inputTask.value === "" || inputTask.value === null) {
-        inputTask.focus();
+    if (inNewTask.value === "" || inNewTask.value === null) {
+        inNewTask.focus();
     } else {
         addTaskAPI();
     }
@@ -30,8 +30,8 @@ const addTaskAPI = async () => {
     const newTask = new Parse.Object("Task");
 
 
-    newTask.set("description", inputTask.value);
-    inputTask.value = "";
+    newTask.set("description", inNewTask.value);
+    inNewTask.value = "";
 
     newTask.set("position", taskList.length);
 
@@ -151,10 +151,9 @@ const createNewLi = (id, position, done) => {
 
 const createNewCheckBox = (id, description, done) => {
     const label = document.createElement("label");
-    label.classList.add("container");
+    label.classList.add("checkbox-container");
 
     const span = document.createElement("span");
-    span.classList.add("editOff");
     span.setAttribute("id", "text_" + id);
 
     const text = document.createTextNode(`${description}`);
@@ -554,5 +553,5 @@ const showDoneTasks = () => {
 }
 
 pullTasks();
-btInsert.onclick = addTask;
+btAddTask.onclick = addTask;
 btShow.onclick = showDoneTasks;
