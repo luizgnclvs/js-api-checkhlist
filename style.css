@@ -17,6 +17,7 @@ body {
     text-align: center;
     background: #01243a66;
     box-shadow: 0 1vw 1vw 0.5vw #01243a;
+    backdrop-filter: blur(0.5vh);
 }
 
 h1 {
