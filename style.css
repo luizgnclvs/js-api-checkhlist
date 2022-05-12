@@ -16,14 +16,14 @@ body {
     z-index: 1;
     text-align: center;
     background: #01243a66;
-    box-shadow: 0 5px 5px 2px #01243a;
+    box-shadow: 0 1vw 1vw 0.5vw #01243a;
 }
 
 h1 {
     margin: 0;
     padding: 2vw;
     font-family: "newakedemo";
-    font-size: 6vw;
+    font-size: 6vh;
     font-weight: 100;
 }
 
@@ -35,40 +35,38 @@ h1 {
     align-items: center;
 }
 
-input {
+.add-new-task input {
+    height: 3.5vh;
+    width: 55vw;
+    margin: 0 2vw;
     padding: 0 1.5vw;
-    border-radius: 2.5vw;
+    color: #01243acd;
+    font-size: 2vh;
     background: #fffef8;
+    border-radius: 2.5vh;
     border: none;
 }
 
-.add-new-task input {
-    height: 3.5vw;
-    width: 55vw;
-    margin: 0 2vw;
-    color: #01243acd;
-    font-size: 1.75vw;  
-}
-
-::placeholder {
-    position: absolute;
-    left: 1.5vw;
-    top: 0.7vw;
+.add-new-task input::placeholder {
     color: #01243a99;
-    font-size: 1.75vw;
+    font-size: 2vh;
     font-weight: bold;
 }
 
+.material-symbols-sharp:hover {
+    cursor: pointer;
+}
+
 .add-new-task span {
-    font-size: 5vw;
+    font-size: 6vh;
     user-select: none;
 }
 
-/* .add-new-task span:hover {
-    color: 01243a66;
-    -webkit-text-stroke: 2px #fffef8;
-    -webkit-text-fill-color: #01243a66;
-} */
+.add-new-task span:hover {
+    font-weight: bolder;
+    -webkit-text-fill-color: #006666;
+    -webkit-text-stroke: #fffef8 0.3vh;
+}
 
 ul {
     padding-inline-start: 0;
@@ -84,7 +82,7 @@ li {
     align-items: center;
 }
 
-#todo-list li {
+#todo-list li, #done-list li:hover {
     background: #66b2b2;
 }
 
@@ -92,29 +90,43 @@ li {
     background: #348d8d;
 }
 
-#todo-list li:hover, #todo-list li:nth-child(odd):hover {
+#todo-list li:hover, #todo-list li:nth-child(odd):hover, #done-list li {
     background: #01243a66;
 }
 
-#done-list li {
-    background: #01243a66;
-}
-
-#done-list li:hover {
-    background-color: #66b2b2;
-}
-
-.checkbox-container {
+.task-end {
     display: flex;
     align-items: center;
-    position: relative;
-    padding-left: 35px;
-    cursor: pointer;
-    font-size: 2vw;
+    position: absolute;
+    right: 3vw;
     user-select: none;
 }
 
-.checkbox-container input {
+.task-end span {
+    font-size: 3.5vh;
+    user-select: none;
+}
+
+span[id^="btEdit_"] {
+    margin-right: 2vw;
+}
+
+span[id^='btEdit_'].edit-on {
+    margin: 0 0 0 2vw;
+}
+
+.checkbox-container {
+    height: inherit;
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding-left: 8.5vh;
+    font-size: 2.25vh;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-container input[type="checkbox"] {
     height: 0;
     width: 0;
     margin: 0;
@@ -124,212 +136,128 @@ li {
 }
 
 .checkbox-container:hover input ~ .checkmark {
-    background-color: #ccc;
+    background: #ccc;
 }
 
 .checkmark {
-    height: 4vh;
-    width: 4vh;
+    height: 3.5vh;
+    width: 3.5vh;
     position: absolute;
-    left: 0;
-    background-color: #eee;
+    left: 2.5vh;
+    background: #eee;
+}
+
+.checkmark:after {
+    height: 1.4vh;
+    width: 0.7vh;
+    content: "";
+    display: none;
+    position: absolute;
+    left: 1.26vh;
+    top: 0.7vh;
+    border: solid white;
+    border-width: 0 0.42vh 0.42vh 0;
+    transform: rotate(45deg);
 }
 
 .checkbox-container input:checked ~ .checkmark {
-    background-color: #2196F3;
-}
-
-/* here? */
-
-button {
-    text-transform: uppercase;
-    border-radius: 15px;
-    background: #212121;
-    border: 0.4vw solid #fffef8;
-    color: #fffef8;
-    user-select: none;
-}
-
-button:hover {
-    cursor: pointer;
-    background: #fffef8;
-    color: #212121;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-.checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
+    background: #2196F3;
 }
 
 .checkbox-container input:checked ~ .checkmark:after {
     display: block;
 }
 
-.checkbox-container .checkmark:after {
-    left: 9px;
-    top: 5px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 3px 3px 0;
-    -webkit-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
-    transform: rotate(45deg);
-}
-
-
-
-.item-first, .item-last {
-    height: inherit;
-    display: flex;
-    align-items: center;
-    margin-left: 2.5vw;
-}
-
-.item-last {
-    margin-right: 2.5vw;
-    width: 7vw;
-    justify-content: space-between;
-}
-
-#done-list .item-last {
-    justify-content: center !important;
-}
-
-input[type="checkbox"] {
-    cursor: pointer;
-    height: 4.5vh;
-    width: 4.5vh;
-    margin: 0 2.5vw !important;
-}
-
-.show {
+.show-more {
     width: 100vw;
     display: flex;
-    flex-direction: row;
     justify-content: center;
-    align-items: center;
-}
-
-.material-symbols-sharp:hover {
+    text-transform: uppercase;
     cursor: pointer;
 }
 
-input.editOff {
+#expand-button, #expand-icon {
+    font-weight: bolder;
+    color: #01243a;
+}
+
+#expand-button {
+    height: 4vh;
+    padding: 0 1vw;
+    display: flex;
+    align-items: center;
+    font-size: 2.2vh;
+    background: #fffef8;
+    border-radius: 2.5vh;
+}
+
+#expand-icon {
+    position: relative;
+    top: 0.15vh;
+    font-size: 2.5vh;
+}
+
+#expand-button:hover, #expand-button:hover span {
+    color: #fffef8;
+    background: #004b54;
+}
+
+.confirmbox-background {
+    height: 100vh;
+    width: 100vw;
     display: none;
-}
-
-
-
-span[id^="cancelEdit_"].editOff {
-    display: none;
-}
-
-input.editOn {
-    all: unset;
-    display: inline-block;
-    font-size: 2vw;
-    color: #fffef8c9;
-    text-decoration: underline red;
-}
-
-span[id^='text_'].editOn {
-    display: none;
-}
-
-span[id^='btEdit_'].editOn {
-    
-}
-
-span[id^='cancelEdit_'].editOn {
-    display: inline-block;
-}
-
-span[id^='remove_'].editOn {
-    display: none;
-}
-
-span[id^='remove_'].editOff {
-    display: inline-block;
-}
-
-#done-list span[id^='btEdit_'] {
-    display: none;
-}
-
-#done-list {
-    display: none;
-}
-
-.confirm-box-background {
-    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     position: fixed;
-    z-index: 1;
     left: 0;
     top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgb(0,0,0);
-    background-color: rgba(0,0,0,0.4);
+    z-index: 1;
+    background: rgb(0,0,0);
+    background: rgba(0,0,0,0.4);
 }
 
-.confirm-box {
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
+.confirmbox {
+    height: 10vh;
+    width: 55vw;
+    padding: 2.5vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fffef8;
 }
 
-.close {
-    color: #aaa;
-    float: left;
-    font-size: 28px;
+.confirmbox-text {
+    color: #01243a;
     font-weight: bold;
 }
 
-.delete {
+#cancel, #delete {
     color: #aaa;
-    float: right;
     font-size: 28px;
-    font-weight: bold;
 }
 
-.close:hover, .delete:hover {
-    background-color: rgba(0,0,0,0.4);
-    text-decoration: none;
-    cursor: pointer;
+#cancel:hover, #delete:hover {
+    -webkit-text-stroke: #01243a 2px;
+    -webkit-text-fill-color: #fffef8;
+}
+
+#done-list, input.edit-off, #done-list span[id^='btEdit_'], span[id^="cancelEdit_"].edit-off, span[id^='text_'].edit-on, span[id^='remove_'].edit-on {
+    display: none;
+}
+
+input.edit-on {
+    all: unset;
+    width: 85vw;
+    font-size: 2.25vh;
+    color: #fffef8;
+    text-decoration: underline red 0.3vh;
 }
 
 @font-face {
     font-family: "newakedemo";
     src: url("./assets/font/newake-demo-400-webfont.woff2") format("woff2"),
          url("./assets/font/newake-demo-400-webfont.woff") format("woff");
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: "pp_pangram_sans_roundedlight";
-    src: url("./assets/font/pppangramsansrounded-light-webfont.woff2") format("woff2"),
-         url("./assets/font/pppangramsansrounded-light-webfont.woff") format("woff");
     font-weight: normal;
     font-style: normal;
 }
