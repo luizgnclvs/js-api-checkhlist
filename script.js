@@ -18,17 +18,8 @@ inNewTask.onblur = () => {
 let toDoTasks = [];
 let doneTasks = [];
 
-// const addTask = () => {
-//     if (inNewTask.value === "" || inNewTask.value === null) {
-//         inNewTask.focus();
-//     } else {
-//         addTaskAPI();
-//     }
-// }
-
-const addTaskAPI = async () => {
+const addTask = async () => {
     const newTask = new Parse.Object("Task");
-
 
     newTask.set("description", inNewTask.value);
     inNewTask.value = "";
@@ -51,6 +42,7 @@ const pullTasks = async () => {
 
     try {
         const results = await query.find();
+
         toDoTasks = [];
         doneTasks = [];
 
@@ -71,10 +63,10 @@ const pullTasks = async () => {
             console.log(`ID: ${id}, Descrição: ${description}, Concluída: ${done}, Posição: ${position}`);
         }
 
-        console.log(`Número de tarefas não-concluídas: ${toDoTasks.length} \nNúmero de tarefas concluídas: ${doneTasks.length}`);
+        console.log(`Fetch executado com sucesso. \nNúmero de tarefas não-concluídas: ${toDoTasks.length} \nNúmero de tarefas concluídas: ${doneTasks.length}`);
 
-        toDoTasks = sortTasks(toDoTasks);
-        doneTasks = sortTasks(doneTasks);
+        toDoTasks = sortList(toDoTasks);
+        doneTasks = sortList(doneTasks);
 
         showTasks();
     } catch (error) {
@@ -102,31 +94,13 @@ const showTasks = () => {
     }
 }
 
-const sortTasks = (tasks) => {
-    tasks.sort((a, b) => a.position - b.position);
-
-    return tasks;
-}
-
 const createNewTask = (task) => {
         const li = createNewLi(task.id, task.position, task.done);
-        const checkbox = createNewCheckBox(task.id, task.description, task.done);
+        const checkBox = createNewCheckBox(task.id, task.description, task.done);
+        const editBox = createNewEditBox(task.id);        
 
-        const btCancelEdit = createNewCancelEditButton(task.id);
-        const btEdit = createNewEditButton(task.id);
-        const btRemove = createNewRemoveButton(task.id);
-
-        const div = document.createElement("div");
-
-        div.classList.add("task-end");
-
-
-        div.appendChild(btCancelEdit);
-        div.appendChild(btEdit);
-        div.appendChild(btRemove);
-
-        li.appendChild(checkbox);
-        li.appendChild(div);
+        li.appendChild(checkBox);
+        li.appendChild(editBox);
 
         return li;
 }
@@ -138,9 +112,9 @@ const createNewLi = (id, position, done) => {
     li.setAttribute("value", position);
 
     if (!done) {
-        li.className = "dropzone";
         li.setAttribute("draggable", true);
         li.setAttribute("ondragover", "event.preventDefault()");
+        li.className = "dropzone";
     }
 
     return li;
@@ -148,253 +122,80 @@ const createNewLi = (id, position, done) => {
 
 const createNewCheckBox = (id, description, done) => {
     const label = document.createElement("label");
-    label.classList.add("checkbox-container");
+    label.className = "checkbox-container";
 
     const span = document.createElement("span");
     span.setAttribute("id", "text_" + id);
 
     const text = document.createTextNode(`${description}`);
-
     span.appendChild(text);
 
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.setAttribute("id", "check_" + id);
-    checkbox.setAttribute("onchange", "toggleTask(this.id)");
+    const checkBox = document.createElement("input");
+    checkBox.type = "checkbox";
+    checkBox.setAttribute("id", "check_" + id);
+    checkBox.setAttribute("onchange", "toggleTask(this.id)");
 
     if (done) {
-        checkbox.setAttribute("checked", true);
+        checkBox.setAttribute("checked", true);
     }
 
-    const checkmark = document.createElement("span");
-    checkmark.classList.add("checkmark");
+    const checkMark = document.createElement("span");
+    checkMark.className = "checkmark";
 
-    const inputEdit = document.createElement("input");
-    inputEdit.type = "text";
-    inputEdit.classList.add("edit-off");
-    inputEdit.setAttribute("id", "inEdit_" + id);
+    const input = document.createElement("input");
+    input.type = "text";
+    input.setAttribute("id", "inEdit_" + id);
 
     label.appendChild(span);
-    label.appendChild(checkbox);
-    label.appendChild(checkmark);
-    label.appendChild(inputEdit);
+    label.appendChild(checkBox);
+    label.appendChild(checkMark);
+    label.appendChild(input);
 
     return label;
 }
 
-const createNewCancelEditButton = (id) => {
+const createNewEditBox = (id) => {
+    const div = document.createElement("div");
+    div.className = "task-end";
+
     const btCancelEdit = document.createElement("span");
-
-    btCancelEdit.classList.add("edit-off");
-    btCancelEdit.classList.add("material-symbols-sharp");
     btCancelEdit.setAttribute("id", "cancelEdit_" + id);
-
+    btCancelEdit.className = "material-symbols-sharp";
     btCancelEdit.innerHTML = "";
 
-    return btCancelEdit;
-}
-
-const createNewEditButton = (id) => {
     const btEdit = document.createElement("span");
-
-    btEdit.classList.add("edit-off");
-    btEdit.classList.add("material-symbols-sharp");
     btEdit.setAttribute("id", "btEdit_" + id);
     btEdit.setAttribute("onclick", "editTask(this.id)");
-
+    btEdit.className = "material-symbols-sharp";
     btEdit.innerHTML = "edit";
 
-    return btEdit;
-}
-
-const createNewRemoveButton = (id) => {
     const btRemove = document.createElement("span");
-
-    btRemove.setAttribute("id", "remove_" + id);
-    btRemove.classList.add("edit-off");
-    btRemove.classList.add("material-symbols-sharp");
-    btRemove.setAttribute("onclick", "removeTask(this.id)");
-
+    btRemove.setAttribute("id", "delete_" + id);
+    btRemove.setAttribute("onclick", "deleteTask(this.id)");
+    btRemove.className = "material-symbols-sharp";
     btRemove.innerHTML = "delete";
 
-    return btRemove;
+    div.appendChild(btCancelEdit);
+    div.appendChild(btEdit);
+    div.appendChild(btRemove);
+
+    return div;
 }
 
-const idSplitter = (id) => {
-    return id.split("_")[1];
-}
-
-const toggleTask = (id) => {
-    let checkBox = document.getElementById(id);
-
-    if (checkBox.checked) {
-        completeTask(id);
-    } else {
-        incompleteTask(id);
-    }
-}
-
-const completeTask = (id) => {
+const deleteTask = (id) => {
     id = idSplitter(id);
 
-    let completedTask = document.querySelector("#task_" + id);
+    let deletedTask = document.querySelector("#task_" + id);
 
-    doneList.appendChild(completedTask);
-
-    completedTask.classList.remove("dropzone");
-    completedTask.setAttribute("draggable", false);
-    completedTask.removeAttribute("ondragover");
-    completedTask.setAttribute("value", doneTasks.length);
-
-    updatePositionAPI(id, doneTasks.length);
-
-    let whichList = 1;
-    updatePosition(whichList);
-
-    let completedTaskItem = toDoTasks.find(object => object.id == id);
-    let index = toDoTasks.findIndex(object => object.id == id);
-
-    console.clear();
-
-    console.log(`Objetos no array \'doneTasks\': ${doneTasks.length}`)
-
-    toDoTasks.splice(index, 1);
-    doneTasks.push(completedTaskItem);
-
-    console.log(`Objetos no array \'doneTasks\': ${doneTasks.length}`);
-
-    toggleDoneAPI(id, true);
-}
-
-const incompleteTask = (id) => {
-    id = id.split("_")[1];
-
-    let incompletedTask = document.querySelector("#task_" + id);
-
-    toDoList.appendChild(incompletedTask);
-
-    incompletedTask.classList.add("dropzone");
-    incompletedTask.setAttribute("draggable", true);
-    incompletedTask.setAttribute("ondragover", "event.preventDefault()");
-    incompletedTask.setAttribute("value", toDoTasks.length);
-
-    updatePositionAPI(id, toDoTasks.length);
-
-    let whichList = 0;
-    updatePosition(whichList);
-
-    let incompletedTaskItem = doneTasks.find(object => object.id == id);
-    let index = doneTasks.findIndex(object => object.id == id);
-
-    console.clear();
-
-    console.log(`Objetos no array \'toDoTasks\': ${toDoTasks.length}`);
-
-    doneTasks.splice(index, 1);
-    toDoTasks.push(incompletedTaskItem);
-
-    console.log(`Objetos no array \'toDoTasks\': ${toDoTasks.length}`);
-
-    toggleDoneAPI(id, false);
-}
-
-const toggleDoneAPI = async (id, boolean) => {
-    const toggledTask = new Parse.Object("Task");
-
-    toggledTask.set("objectId", id);
-    toggledTask.set("done", boolean);
-
-    try {
-        let result = await toggledTask.save();
-        console.log("Objeto de ID \'" + result.id + "\' atualizado com sucesso.");
-    } catch (error) {
-        console.error("Falha ao atualizar objeto. Erro de código: " + error);
-    }
-}
-
-const editTask = (id) => {
-    let button = document.getElementById(id);
-
-    id = idSplitter(id);
-
-    let btCancel = document.querySelector("#cancelEdit_" + id);
-    let input = document.querySelector("#inEdit_" + id);
-    let text = document.querySelector("#text_" + id);
-    let btRemove = document.querySelector("#remove_" + id);
-
-    button.classList.remove("edit-off");
-    button.classList.add("edit-on");
-    button.innerHTML = "check_circle";
-
-    btCancel.classList.add("edit-on");
-    btRemove.classList.add("edit-on");
-    btCancel.classList.remove("edit-off");
-    btRemove.classList.remove("edit-off");
-    btCancel.innerHTML = "cancel";
-    input.className = "edit-on";
-    text.className = "edit-on";
-    btRemove.innerHTML = "";
-
-    input.value = text.innerHTML;
-    input.focus();
-
-    button.onclick = () => {
-        if (input.value !== null && input.value !== "") {
-            text.innerHTML = input.value;
-
-            editOver();
-
-            editTaskAPI(id, input.value);
-        }
-    }
-
-    btCancel.onclick = () => {
-        editOver();
-    }
-
-    const editOver = () => {
-        button.classList.remove("edit-on");
-        button.classList.add("edit-off");
-        button.innerHTML = "edit";
-
-        btCancel.classList.remove("edit-on");
-        btRemove.classList.remove("edit-on");
-        btCancel.classList.add("edit-off");
-        btRemove.classList.add("edit-off");
-        button.setAttribute("onclick", "editTask(this.id)");
-
-        btCancel.innerHTML = "";
-        input.className = "edit-off";
-        text.className = "edit-off";
-        btRemove.innerHTML = "delete";
-    }
-
-    let item = document.querySelector("#task_" + id);
-
-    document.addEventListener("click", (event) => {
-        let isClickInside = item.contains(event.target);
-
-        if (!isClickInside) {
-            editOver();
-        }
-    });
-}
-
-const removeTask = (id) => {
-    id = idSplitter(id);
-
-    let removedTask = document.querySelector("#task_" + id);
-
-    confirmDelete().then (
-        (response) => {
+    confirmDelete()
+        .then ((response) => {
             if (response === true) {
-                removedTask.remove();
+                deletedTask.remove();
                 deleteTaskAPI(id);
             }
         }
     );
 }
-
 
 const confirmDelete = async () => {
     const confirmBox = document.querySelector(".confirmbox-background");
@@ -403,17 +204,17 @@ const confirmDelete = async () => {
     const confirmDelete = document.getElementById("delete");
     const cancelDelete = document.getElementById("cancel");
 
-    let confirm = null;
+    let confirmation = null;
 
     confirmDelete.onclick = () => {
-        confirm = true;
+        confirmation = true;
     }
 
     cancelDelete.onclick = () => {
-        confirm = false;
+        confirmation = false;
     }
 
-    while (confirm === null) {
+    while (confirmation === null) {
         await sleep(1000);
     }
 
@@ -421,12 +222,7 @@ const confirmDelete = async () => {
 
     console.clear();
 
-    return confirm;
-}
-
-const sleep = (ms) => {
-    console.log("Aguardando...");
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return confirmation;
 }
 
 const deleteTaskAPI = async (id) => {
@@ -442,6 +238,66 @@ const deleteTaskAPI = async (id) => {
     }
 }
 
+const editTask = (id) => {
+    let btEdit = document.getElementById(id);
+
+    id = idSplitter(id);
+
+    let btCancel = document.querySelector("#cancelEdit_" + id);
+    let btDelete = document.querySelector("#delete_" + id);
+    let text = document.querySelector("#text_" + id);
+    let input = document.querySelector("#inEdit_" + id);
+
+    btEdit.classList.toggle("edit-on");
+    btCancel.classList.toggle("edit-on");
+    btDelete.classList.toggle("edit-on");
+    text.classList.toggle("edit-on");
+    input.classList.toggle("edit-on");
+
+    btEdit.innerHTML = "check_circle";
+    btCancel.innerHTML = "cancel";
+    btDelete.innerHTML = "";
+
+    input.value = text.innerHTML;
+    input.focus();
+
+    btEdit.onclick = () => {
+        if (input.value !== null && input.value !== "") {
+            text.innerHTML = input.value;
+            editTaskAPI(id, input.value);
+            editOver();
+        }
+    }
+
+    btCancel.onclick = () => {
+        editOver();
+    }
+
+    let taskBox = document.querySelector("#task_" + id);
+
+    document.addEventListener("click", (event) => {
+        let isClickInside = taskBox.contains(event.target);
+
+        if (!isClickInside) {
+            editOver();
+        }
+    });
+
+    const editOver = () => {
+        btEdit.classList.toggle("edit-on");
+        btCancel.classList.toggle("edit-on");
+        btDelete.classList.toggle("edit-on");
+        text.classList.toggle("edit-on");
+        input.classList.toggle("edit-on");
+
+        btEdit.innerHTML = "edit";
+        btCancel.innerHTML = "";
+        btDelete.innerHTML = "delete";
+
+        btEdit.setAttribute("onclick", "editTask(this.id)");
+    }
+}
+
 const editTaskAPI = async (id, description) => {
     const editedTask = new Parse.Object("Task");
 
@@ -450,40 +306,106 @@ const editTaskAPI = async (id, description) => {
 
     try {
         let result = await editedTask.save();
-        console.log("Objeto de ID \'" + result.id + "\' atualizado com sucesso.");
+        console.log("Descrição do objeto de ID \'" + result.id + "\' atualizada com sucesso.");
+    } catch (error) {
+        console.error("Falha ao atualizar objeto. Erro de código: " + error);
+    }
+}
+
+const toggleTask = (id) => {
+    let checkBox = document.getElementById(id);
+    id = idSplitter(id);
+
+    if (checkBox.checked) {
+        completeTask(id);
+    } else {
+        incompleteTask(id);
+    }
+}
+
+const completeTask = (id) => {
+    let completedTask = document.querySelector("#task_" + id);
+    completedTask.setAttribute("value", doneTasks.length);
+    completedTask.setAttribute("draggable", false);
+    completedTask.removeAttribute("ondragover");
+    completedTask.classList.remove("dropzone");
+
+    doneList.appendChild(completedTask);
+
+    let whichList = 1;
+    updatePosition(whichList);
+    updatePositionAPI(id, doneTasks.length);
+
+    let completedTaskItem = toDoTasks.find(object => object.id == id);
+    let index = toDoTasks.findIndex(object => object.id == id);
+    toDoTasks.splice(index, 1);
+    doneTasks.push(completedTaskItem);
+
+    toggleDoneAPI(id, true);
+}
+
+const incompleteTask = (id) => {
+    let incompletedTask = document.querySelector("#task_" + id);
+    incompletedTask.setAttribute("value", toDoTasks.length);
+    incompletedTask.setAttribute("draggable", true);
+    incompletedTask.setAttribute("ondragover", "event.preventDefault()");
+    incompletedTask.classList.add("dropzone");
+
+    toDoList.appendChild(incompletedTask);
+
+    let whichList = 0;
+    updatePosition(whichList);
+    updatePositionAPI(id, toDoTasks.length);
+
+    let incompletedTaskItem = doneTasks.find(object => object.id == id);
+    let index = doneTasks.findIndex(object => object.id == id);
+    doneTasks.splice(index, 1);
+    toDoTasks.push(incompletedTaskItem);
+
+    toggleDoneAPI(id, false);
+}
+
+const toggleDoneAPI = async (id, boolean) => {
+    const toggledTask = new Parse.Object("Task");
+
+    toggledTask.set("objectId", id);
+    toggledTask.set("done", boolean);
+
+    try {
+        let result = await toggledTask.save();
+        console.log("Status de compleição do objeto de ID \'" + result.id + "\' atualizado com sucesso.");
     } catch (error) {
         console.error("Falha ao atualizar objeto. Erro de código: " + error);
     }
 }
 
 const updatePosition = (whichList) => {
-    let tasks;
+    let list;
 
     if (whichList == 1) {
-        tasks = document.getElementById("todo-list").children;
+        list = document.getElementById("todo-list").children;
     } else {
-        tasks = document.getElementById("done-list").children;
+        list = document.getElementById("done-list").children;
     }
 
-    console.log(`Elemetos na lista: ${tasks.length}`);
+    console.clear();
+    console.log(`Elementos na lista: ${list.length}`);
 
-    for (let i = 0; i < tasks.length; i++) {
-        tasks[i].setAttribute("value", i);
-
-        let id = idSplitter(tasks[i].id);
-
+    for (let i = 0; i < list.length; i++) {
+        list[i].setAttribute("value", i);
+        let id = idSplitter(list[i].id);
         updatePositionAPI(id, i);
     }
 }
 
 const updatePositionAPI = async (id, position) => {
-    const updatedTask = new Parse.Object("Task");
+    const movedTask = new Parse.Object("Task");
 
-    updatedTask.set("objectId", id);
-    updatedTask.set("position", position);
+    movedTask.set("objectId", id);
+    movedTask.set("position", position);
 
     try {
-        let result = await updatedTask.save();
+        let result = await movedTask.save();
         console.log("Posição do objeto de ID \'" + result.id + "\' atualizada com sucesso.");
     } catch (error) {
         console.error("Falha ao atualizar objeto. Erro de código: " + error);
@@ -523,7 +445,7 @@ document.addEventListener("drop", ({target}) => {
         }
 
         console.clear();
-        console.log("Índice de \'drag\': " + (index + 1) + ". Índice de \'drop\': " + (indexDrop + 1));
+        console.log("Índice de \'dragstart\': " + (index + 1) + ". \nÍndice de \'drop\': " + (indexDrop + 1));
 
         if (index > indexDrop) {
             target.before(dragged);
@@ -536,19 +458,33 @@ document.addEventListener("drop", ({target}) => {
     }
 });
 
-const btShow = document.getElementById("expand-button");
-const iconShow = document.getElementById("expand-icon");
+const btExpand = document.getElementById("expand-button");
+const iconExpand = document.getElementById("expand-icon");
 
 const showDoneTasks = () => {
     if (doneList.style.display == "block") {
         doneList.style.display = "none";
-        iconShow.innerHTML = "expand_more";
+        iconExpand.innerHTML = "expand_more";
     } else {
         doneList.style.display = "block";
-        iconShow.innerHTML = "expand_less";
+        iconExpand.innerHTML = "expand_less";
     }
 }
 
+const sortList = (list) => {
+    list.sort((a, b) => a.position - b.position);
+    return list;
+}
+
+const idSplitter = (id) => {
+    return id.split("_")[1];
+}
+const sleep = (ms) => {
+    console.log("Aguardando...");
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 pullTasks();
+
 btAddTask.onclick = addTask;
-btShow.onclick = showDoneTasks;
+btExpand.onclick = showDoneTasks;

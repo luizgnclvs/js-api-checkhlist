@@ -65,7 +65,7 @@ h1 {
 .add-new-task span:hover {
     font-weight: bolder;
     -webkit-text-fill-color: #006666;
-    -webkit-text-stroke: #fffef8 0.3vh;
+    -webkit-text-stroke: #fffef8 0.125vh;
 }
 
 ul {
@@ -173,6 +173,7 @@ span[id^='btEdit_'].edit-on {
     display: flex;
     justify-content: center;
     text-transform: uppercase;
+    user-select: none;
     cursor: pointer;
 }
 
@@ -235,6 +236,7 @@ span[id^='btEdit_'].edit-on {
 #cancel, #delete {
     color: #aaa;
     font-size: 28px;
+    user-select: none;
 }
 
 #cancel:hover, #delete:hover {
@@ -242,8 +244,12 @@ span[id^='btEdit_'].edit-on {
     -webkit-text-fill-color: #fffef8;
 }
 
-#done-list, input.edit-off, #done-list span[id^='btEdit_'], span[id^="cancelEdit_"].edit-off, span[id^='text_'].edit-on, span[id^='remove_'].edit-on {
+#done-list, input[id^="inEdit_"], #done-list span[id^='btEdit_'], span[id^="cancelEdit_"], span[id^='text_'].edit-on, span[id^='remove_'].edit-on {
     display: none;
+}
+
+span[id^="cancelEdit_"].edit-on {
+    display: inline-block;
 }
 
 input.edit-on {
